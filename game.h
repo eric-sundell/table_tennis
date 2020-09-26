@@ -9,6 +9,8 @@ struct Ball
     short y;
 };
 
+typedef signed char PlayerInput;
+
 struct PlayerState
 {
     unsigned char score;
@@ -22,5 +24,7 @@ struct GameState
 };
 
 void g_init(struct GameState *state);
+
+void g_update(struct GameState *state, const PlayerInput *inputs);
 
 #endif

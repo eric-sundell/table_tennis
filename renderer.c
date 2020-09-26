@@ -98,7 +98,7 @@ static bool draw_paddles(const struct PlayerState *players)
     for (size_t i = 0; i < PLAYER_COUNT; ++i)
     {
         paddles[i].x = player_x_coords[i];
-        paddles[i].y = players->y + TABLE_Y;
+        paddles[i].y = players[i].y + TABLE_Y;
         paddles[i].w = PADDLE_WIDTH;
         paddles[i].h = PADDLE_HEIGHT;
     }
