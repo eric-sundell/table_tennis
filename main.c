@@ -1,3 +1,4 @@
+#include "game.h"
 #include "renderer.h"
 #include "util.h"
 #include <SDL.h>
@@ -9,6 +10,8 @@
 
 static bool main_loop(void)
 {
+    struct GameState game_state;
+    g_init(&game_state);
     while (1)
     {
         SDL_Event e;
@@ -21,7 +24,7 @@ static bool main_loop(void)
             }
         }
 
-        r_draw_frame();
+        r_draw_frame(&game_state);
     }
 }
 

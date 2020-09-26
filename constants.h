@@ -13,4 +13,8 @@
 #define PADDLE_WIDTH 4
 #define PADDLE_HEIGHT 16
 
+#define PLAYER_COUNT 2
+
+extern const short player_x_coords[PLAYER_COUNT];
+
 #endif
