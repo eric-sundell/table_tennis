@@ -9,7 +9,7 @@
 
 static void read_inputs(PlayerInput *inputs)
 {
-    const int paddle_speed = 5;
+    const int paddle_speed = 2;
     const Uint8 *keys = SDL_GetKeyboardState(NULL);
     int p1_mult = keys[SDL_SCANCODE_LSHIFT] ? 2 : 1;
     int p2_mult = keys[SDL_SCANCODE_RSHIFT] ? 2 : 1;

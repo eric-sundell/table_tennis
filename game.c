@@ -1,5 +1,6 @@
 #include "game.h"
 #include "coord.h"
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
 
@@ -9,12 +10,33 @@ static void move_ball(struct GameState *state);
 
 static void reset_ball(struct Ball *ball, int dir_x);
 
+static int gcd(int a, int b)
+{
+    a = abs(a);
+    b = abs(b);
+
+    if (a == b)
+        return a;
+    else if (a > b)
+        return gcd(a - b, b);
+    else
+        return gcd(a, b - a);
+}
+
 static void inc_score(unsigned char *score)
 {
     unsigned new_score = *score + 1;
     if (new_score >= 100)
         new_score = 99;
     *score = new_score;
+}
+
+static bool paddle_collide(int pad_x, int pad_y, int ball_x, int ball_y)
+{
+    return pad_x < ball_x + BALL_SIZE
+        && pad_x + PADDLE_WIDTH > ball_x
+        && pad_y < ball_y + BALL_SIZE
+        && pad_y + PADDLE_HEIGHT > ball_y;
 }
 
 void g_init(struct GameState *state)
@@ -45,7 +67,7 @@ void g_update(struct GameState *state, const PlayerInput *inputs)
 
 static void move_ball(struct GameState *state)
 {
-    int speed = coord_from_int(state->ball.speed);
+    int speed = state->ball.speed;
     int denom = abs(state->ball.dir_x) + abs(state->ball.dir_y);
     int vel_x = coord_mul_frac(speed, state->ball.dir_x, denom);
     int vel_y = coord_mul_frac(speed, state->ball.dir_y, denom);
@@ -82,6 +104,26 @@ static void move_ball(struct GameState *state)
         new_y = coord_from_int(TABLE_HEIGHT - BALL_SIZE);
     }
 
+    // Paddle collisions
+    for (int i = 0; i < PLAYER_COUNT; ++i)
+    {
+        if (paddle_collide(player_x_coords[i],
+            state->players[i].y,
+            coord_to_int(new_x),
+            coord_to_int(new_y)))
+        {
+            int dir_x = coord_to_int(new_x) - (player_x_coords[i] + PADDLE_WIDTH / 2);
+            int dir_y = coord_to_int(new_y) - (state->players[i].y + PADDLE_HEIGHT / 2);
+            int divisor = gcd(dir_x, dir_y);
+            dir_x /= divisor;
+            dir_y /= divisor;
+            state->ball.dir_x = dir_x;
+            state->ball.dir_y = dir_y;
+            state->ball.speed += COORD_SCALE / 2;
+            break;
+        }
+    }
+
     state->ball.x_coord = new_x;
     state->ball.y_coord = new_y;
 }
@@ -92,5 +134,5 @@ static void reset_ball(struct Ball *ball, int dir_x)
     ball->y_coord = coord_from_int(10);
     ball->dir_x = dir_x;
     ball->dir_y = 1;
-    ball->speed = 1;
+    ball->speed = coord_from_int(1);
 }
