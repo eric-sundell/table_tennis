@@ -5,8 +5,11 @@
 
 struct Ball
 {
-    short x;
-    short y;
+    short x_coord;
+    short y_coord;
+    short dir_x;
+    short dir_y;
+    short speed;
 };
 
 typedef signed char PlayerInput;

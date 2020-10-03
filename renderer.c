@@ -1,5 +1,6 @@
 #include "renderer.h"
 #include "constants.h"
+#include "coord.h"
 #include "util.h"
 #include <SDL.h>
 #include <stddef.h>
@@ -77,8 +78,8 @@ bool r_draw_frame(const struct GameState *state)
     CHECK_RESULT(SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255))
     SDL_Rect ball =
     {
-        state->ball.x,
-        state->ball.y + TABLE_Y,
+        coord_to_int(state->ball.x_coord),
+        coord_to_int(state->ball.y_coord) + TABLE_Y,
         BALL_SIZE, BALL_SIZE
     };
     CHECK_RESULT(SDL_RenderFillRect(renderer, &ball))
