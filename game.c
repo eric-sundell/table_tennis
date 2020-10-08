@@ -23,12 +23,12 @@ static int gcd(int a, int b)
         return gcd(a, b - a);
 }
 
-static void inc_score(unsigned char *score)
+static unsigned char inc_score(unsigned char score)
 {
-    unsigned new_score = *score + 1;
+    unsigned new_score = score + 1;
     if (new_score >= 100)
         new_score = 99;
-    *score = new_score;
+    return new_score;
 }
 
 static bool paddle_collide(int pad_x, int pad_y, int ball_x, int ball_y)
@@ -77,7 +77,7 @@ static void move_ball(struct GameState *state)
     // Left edge collision
     if (new_x < 0)
     {
-        inc_score(&(state->players[1].score));
+        state->players[1].score = inc_score(state->players[1].score);
         reset_ball(&(state->ball), 1);
         return;
     }
@@ -85,7 +85,7 @@ static void move_ball(struct GameState *state)
     // Right edge collision
     if (coord_to_int(new_x) + BALL_SIZE > TABLE_WIDTH)
     {
-        inc_score(&(state->players[0].score));
+        state->players[0].score = inc_score(state->players[0].score);
         reset_ball(&(state->ball), -1);
         return;
     }
