@@ -116,6 +116,8 @@ static void move_ball(struct GameState *state)
         {
             int dir_x = coord_to_int(new_x) + BALL_SIZE / 2 - (player_x_coords[i] + PADDLE_WIDTH / 2);
             int dir_y = coord_to_int(new_y) + BALL_SIZE / 2 - (state->players[i].y + PADDLE_HEIGHT / 2);
+            if (dir_x == 0)
+                dir_x = i == 0 ? 1 : -1;
             int divisor = gcd(dir_x, dir_y);
             dir_x /= divisor;
             dir_y /= divisor;

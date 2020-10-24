@@ -12,6 +12,7 @@
 
 #define PADDLE_WIDTH 4
 #define PADDLE_HEIGHT 16
+#define PADDLE_MAX_SPEED 4
 
 #define PLAYER_COUNT 2
 

@@ -1,3 +1,4 @@
+#include "ai.h"
 #include "game.h"
 #include "renderer.h"
 #include "util.h"
@@ -9,7 +10,7 @@
 
 static void read_inputs(PlayerInput *inputs)
 {
-    const int paddle_speed = 2;
+    const int paddle_speed = PADDLE_MAX_SPEED / 2;
     const Uint8 *keys = SDL_GetKeyboardState(NULL);
     int p1_mult = keys[SDL_SCANCODE_LSHIFT] ? 2 : 1;
     int p2_mult = keys[SDL_SCANCODE_RSHIFT] ? 2 : 1;
@@ -48,6 +49,7 @@ static bool main_loop(void)
         last_frame = current_frame;
         PlayerInput inputs[PLAYER_COUNT] = {0};
         read_inputs(inputs);
+        inputs[1] = ai_determine_input(&game_state, 1);
         while (remaining_time >= FRAME_TIME)
         {
             g_update(&game_state, inputs);
