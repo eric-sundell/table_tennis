@@ -12,6 +12,8 @@ static void reset_ball(struct Ball *ball, int dir_x);
 
 static int gcd(int a, int b)
 {
+    if (a == 0 || b == 0)
+        return 1;
     a = abs(a);
     b = abs(b);
 
@@ -112,8 +114,8 @@ static void move_ball(struct GameState *state)
             coord_to_int(new_x),
             coord_to_int(new_y)))
         {
-            int dir_x = coord_to_int(new_x) - (player_x_coords[i] + PADDLE_WIDTH / 2);
-            int dir_y = coord_to_int(new_y) - (state->players[i].y + PADDLE_HEIGHT / 2);
+            int dir_x = coord_to_int(new_x) + BALL_SIZE / 2 - (player_x_coords[i] + PADDLE_WIDTH / 2);
+            int dir_y = coord_to_int(new_y) + BALL_SIZE / 2 - (state->players[i].y + PADDLE_HEIGHT / 2);
             int divisor = gcd(dir_x, dir_y);
             dir_x /= divisor;
             dir_y /= divisor;
