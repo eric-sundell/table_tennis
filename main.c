@@ -1,6 +1,7 @@
 #include "ai.h"
 #include "game.h"
 #include "renderer.h"
+#include "sound.h"
 #include "util.h"
 #include <SDL.h>
 #include <stdbool.h>
@@ -109,20 +110,27 @@ int main(int argc, char **argv)
 {
     parse_args(argc, argv);
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) != 0)
     {
         u_display_sdl_error();
         return EXIT_FAILURE;
     }
 
+    if (!s_init())
+    {
+        SDL_Quit();
+        return EXIT_FAILURE;
+    }
     if (!r_init())
     {
+        s_quit();
         SDL_Quit();
         return EXIT_FAILURE;
     }
 
     bool successful_exit = main_loop();
 
+    s_quit();
     SDL_Quit();
     return successful_exit ? EXIT_SUCCESS : EXIT_FAILURE;
 }

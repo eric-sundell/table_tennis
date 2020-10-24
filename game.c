@@ -1,5 +1,6 @@
 #include "game.h"
 #include "coord.h"
+#include "sound.h"
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -97,6 +98,7 @@ static void move_ball(struct GameState *state)
     {
         state->ball.dir_y = -state->ball.dir_y;
         new_y = 0;
+        s_play_bounce();
     }
 
     // Bottom edge collision
@@ -104,6 +106,7 @@ static void move_ball(struct GameState *state)
     {
         state->ball.dir_y = -state->ball.dir_y;
         new_y = coord_from_int(TABLE_HEIGHT - BALL_SIZE);
+        s_play_bounce();
     }
 
     // Paddle collisions
@@ -124,6 +127,7 @@ static void move_ball(struct GameState *state)
             state->ball.dir_x = dir_x;
             state->ball.dir_y = dir_y;
             state->ball.speed += COORD_SCALE / 2;
+            s_play_bounce();
             break;
         }
     }
