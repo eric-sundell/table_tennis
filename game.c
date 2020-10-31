@@ -140,9 +140,12 @@ static void move_ball(struct GameState *state)
 
 static void reset_ball(struct Ball *ball, int dir_x)
 {
+    const int min_x = 50;
+    const int max_x = 160;
+    int rand_x = rand() / (RAND_MAX / (max_x - min_x) + 1) + min_x;
     ball->x_coord = coord_from_int(TABLE_WIDTH / 2 - BALL_SIZE / 2);
     ball->y_coord = coord_from_int(10);
-    ball->dir_x = dir_x;
-    ball->dir_y = 1;
+    ball->dir_x = dir_x * rand_x;
+    ball->dir_y = 64;
     ball->speed = coord_from_int(1);
 }

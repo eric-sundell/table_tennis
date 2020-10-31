@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define FRAME_TIME (1000/60)
 
@@ -132,6 +133,7 @@ static bool main_loop(void)
 int main(int argc, char **argv)
 {
     parse_args(argc, argv);
+    srand(time(NULL));
 
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) != 0)
     {
