@@ -12,31 +12,54 @@
 
 #define FRAME_TIME (1000/60)
 
-static bool p1_ai = false;
-static bool p2_ai = false;
-
 static const char * const help_text =
 "Options:\n"
-"--ai1\t\tLeft player is controlled by AI\n"
-"--ai2\t\tRight player is controlled by AI\n"
-"--easy\t\tSets the AI difficulty to easy\n"
-"--normal\tSets the AI difficulty to normal\n"
-"--hard\t\tSets the AI difficulty to hard";
+"--player1=<difficulty>\tSets the AI difficulty for player 1\n"
+"--player2=<difficulty>\tSets the AI difficulty for player 2\n"
+"\n<difficulty> is one of:\n"
+"\tnone\tThe player is not AI-controlled\n"
+"\teasy\n"
+"\tnormal\n"
+"\thard\n";
+
+static bool starts_with(const char *str, const char *prefix)
+{
+    size_t prefix_len = strlen(prefix);
+    return strncmp(str, prefix, prefix_len) == 0;
+}
+
+static enum AIDifficulty extract_difficulty(const char *arg)
+{
+    const char *equals = strchr(arg, '=');
+    const char *diff = equals + 1;
+    if (strcmp(diff, "none") == 0)
+        return AI_NONE;
+    else if (strcmp(diff, "easy") == 0)
+        return AI_EASY;
+    else if (strcmp(diff, "normal") == 0)
+        return AI_NORMAL;
+    else if (strcmp(diff, "hard") == 0)
+        return AI_HARD;
+    else
+    {
+        fprintf(stderr, "Unrecognized difficulty '%s'\n", diff);
+        exit(EXIT_FAILURE);
+    }
+    
+}
 
 static void parse_args(int argc, char **argv)
 {
     for (int i = 1; i < argc; ++i)
     {
-        if (strcmp(argv[i], "--ai1") == 0)
-            p1_ai = true;
-        else if (strcmp(argv[i], "--ai2") == 0)
-            p2_ai = true;
-        else if (strcmp(argv[i], "--easy") == 0)
-            ai_set_difficulty(AI_EASY);
-        else if (strcmp(argv[i], "--normal") == 0)
-            ai_set_difficulty(AI_NORMAL);
-        else if (strcmp(argv[i], "--hard") == 0)
-            ai_set_difficulty(AI_HARD);
+        if (starts_with(argv[i], "--player1="))
+        {
+            ai_difficulties[0] = extract_difficulty(argv[i]);
+        }
+        else if (starts_with(argv[i], "--player2="))
+        {
+            ai_difficulties[1] = extract_difficulty(argv[i]);
+        }
         else if (strcmp(argv[i], "--help") == 0)
         {
             puts(help_text);
@@ -91,9 +114,9 @@ static bool main_loop(void)
         last_frame = current_frame;
         PlayerInput inputs[PLAYER_COUNT] = {0};
         read_inputs(inputs);
-        if (p1_ai)
+        if (ai_difficulties[0] != AI_NONE)
             inputs[0] = ai_determine_input(&game_state, 0);
-        if (p2_ai)
+        if (ai_difficulties[1] != AI_NONE)
             inputs[1] = ai_determine_input(&game_state, 1);
         while (remaining_time >= FRAME_TIME)
         {
