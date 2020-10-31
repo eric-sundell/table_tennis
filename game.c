@@ -82,6 +82,7 @@ static void move_ball(struct GameState *state)
     {
         state->players[1].score = inc_score(state->players[1].score);
         reset_ball(&(state->ball), 1);
+        s_play_score();
         return;
     }
 
@@ -90,6 +91,7 @@ static void move_ball(struct GameState *state)
     {
         state->players[0].score = inc_score(state->players[0].score);
         reset_ball(&(state->ball), -1);
+        s_play_score();
         return;
     }
 

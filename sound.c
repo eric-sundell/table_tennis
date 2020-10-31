@@ -8,6 +8,7 @@
 #include <string.h>
 
 static Mix_Chunk *bounce_sample = NULL;
+static Mix_Chunk *score_sample = NULL;
 
 static char *concat(const char *a, const char *b)
 {
@@ -20,6 +21,18 @@ static char *concat(const char *a, const char *b)
         memcpy(buffer + a_len, b, b_len);
     }
     return buffer;
+}
+
+static void play_sample(Mix_Chunk *sample)
+{
+    int channel = Mix_PlayChannel(-1, sample, 0);
+    if (channel == -1)
+    {
+        SDL_LogWarn(
+            SDL_LOG_CATEGORY_APPLICATION,
+            "Failed to play sound: %s",
+            Mix_GetError());
+    }
 }
 
 bool s_init(void)
@@ -52,6 +65,20 @@ bool s_init(void)
     }
     free(path);
 
+    path = concat(base_path, "sounds/score.wav");
+    if (!path)
+    {
+        u_display_error(strerror(errno), "Error");
+        goto error;
+    }
+    score_sample = Mix_LoadWAV(path);
+    if (!bounce_sample)
+    {
+        u_display_error(Mix_GetError(), "SDL Mixer Error");
+        goto error;
+    }
+    free(path);
+
     SDL_free(base_path);
     return true;
 
@@ -61,25 +88,18 @@ bool s_init(void)
     {
         SDL_free(base_path);
     }
-    if (bounce_sample)
-    {
-        Mix_FreeChunk(bounce_sample);
-        bounce_sample = NULL;
-    }
-    Mix_CloseAudio();
+    s_quit();
     return false;
 }
 
 void s_play_bounce(void)
 {
-    int channel = Mix_PlayChannel(-1, bounce_sample, 0);
-    if (channel == -1)
-    {
-        SDL_LogWarn(
-            SDL_LOG_CATEGORY_APPLICATION,
-            "Failed to play sound: %s",
-            Mix_GetError());
-    }
+    play_sample(bounce_sample);
+}
+
+void s_play_score(void)
+{
+    play_sample(score_sample);
 }
 
 void s_quit(void)
@@ -88,6 +108,11 @@ void s_quit(void)
     {
         Mix_FreeChunk(bounce_sample);
         bounce_sample = NULL;
+    }
+    if (score_sample)
+    {
+        Mix_FreeChunk(score_sample);
+        score_sample = NULL;
     }
     Mix_CloseAudio();
 }
