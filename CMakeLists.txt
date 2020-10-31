@@ -20,5 +20,10 @@ add_executable(table_tennis
     sound.h sound.c
     util.h util.c)
 set_property(TARGET table_tennis PROPERTY C_EXTENSIONS OFF)
+if(MSVC)
+    target_compile_options(table_tennis PRIVATE /W4)
+else()
+    target_compile_options(table_tennis PRIVATE -Wall -Wextra -pedantic)
+endif()
 target_link_libraries(table_tennis ${SDL2_LIBRARIES} ${SDL2_MIXER_LIBRARIES})
 configure_file(sounds/bounce.wav sounds/bounce.wav COPYONLY)
