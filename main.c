@@ -23,6 +23,8 @@ static const char * const help_text =
 "\tnormal\n"
 "\thard\n";
 
+static SDL_GameController *controllers[PLAYER_COUNT];
+
 static bool starts_with(const char *str, const char *prefix)
 {
     size_t prefix_len = strlen(prefix);
@@ -74,6 +76,61 @@ static void parse_args(int argc, char **argv)
     }
 }
 
+static void close_controllers(void)
+{
+    for (size_t i = 0; i < PLAYER_COUNT; ++i)
+    {
+        if (controllers[i])
+        {
+            SDL_GameControllerClose(controllers[i]);
+            controllers[i] = NULL;
+        }
+    }
+}
+
+static bool add_controller(int index)
+{
+    for (size_t i = 0; i < PLAYER_COUNT; ++i)
+    {
+        if (!controllers[i])
+        {
+            controllers[i] = SDL_GameControllerOpen(index);
+            if (!controllers[i])
+            {
+                u_display_sdl_error();
+                return false;
+            }
+            SDL_Log(
+                "Added controller '%s' for player %u",
+                SDL_GameControllerName(controllers[i]),
+                (unsigned)i + 1u);
+            break;
+        }
+    }
+    return true;
+}
+
+static void remove_controller(SDL_JoystickID id)
+{
+    SDL_GameController *removed = SDL_GameControllerFromInstanceID(id);
+    if (removed)
+    {
+        for (size_t i = 0; i < PLAYER_COUNT; ++i)
+        {
+            if (controllers[i] == removed)
+            {
+                SDL_GameControllerClose(removed);
+                controllers[i] = NULL;
+                SDL_Log(
+                    "Removed player %u's controller (ID %d)",
+                    (unsigned)i + 1u,
+                    (int)id);
+                return;
+            }
+        }
+    }
+}
+
 static void read_inputs(PlayerInput *inputs)
 {
     const int paddle_speed = PADDLE_MAX_SPEED / 2;
@@ -88,6 +145,26 @@ static void read_inputs(PlayerInput *inputs)
         inputs[1] -= paddle_speed * p2_mult;
     if (keys[SDL_SCANCODE_DOWN])
         inputs[1] += paddle_speed * p2_mult;
+
+    for (size_t i = 0; i < PLAYER_COUNT; ++i)
+    {
+        if (!controllers[i])
+            continue;
+        
+        int value = SDL_GameControllerGetAxis(
+            controllers[i],
+            SDL_CONTROLLER_AXIS_LEFTY);
+        // Make input symmetric
+        if (value < 0)
+            value += 1;
+        // Deadzone
+        value /= 100;
+        // Normalize
+        const int maxAxisValue = 32767 / 100;
+        value = value * PADDLE_MAX_SPEED / maxAxisValue;
+        if (value != 0)
+            inputs[i] = (PlayerInput)value;
+    }
 }
 
 static bool main_loop(void)
@@ -104,6 +181,13 @@ static bool main_loop(void)
         {
             switch (e.type)
             {
+                case SDL_CONTROLLERDEVICEADDED:
+                    if (!add_controller(e.cdevice.which))
+                        return false;
+                    break;
+                case SDL_CONTROLLERDEVICEREMOVED:
+                    remove_controller(e.cdevice.which);
+                    break;
                 case SDL_QUIT:
                     return true;
             }
@@ -135,27 +219,22 @@ int main(int argc, char **argv)
     parse_args(argc, argv);
     srand(time(NULL));
 
-    if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) != 0)
+    if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_GAMECONTROLLER) != 0)
     {
         u_display_sdl_error();
         return EXIT_FAILURE;
     }
+    atexit(SDL_Quit);
 
     if (!s_init())
-    {
-        SDL_Quit();
         return EXIT_FAILURE;
-    }
+    atexit(s_quit);
     if (!r_init())
-    {
-        s_quit();
-        SDL_Quit();
         return EXIT_FAILURE;
-    }
+
+    atexit(close_controllers);
 
     bool successful_exit = main_loop();
 
-    s_quit();
-    SDL_Quit();
     return successful_exit ? EXIT_SUCCESS : EXIT_FAILURE;
 }
