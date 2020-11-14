@@ -119,8 +119,10 @@ static void move_ball(struct GameState *state)
             coord_to_int(new_x),
             coord_to_int(new_y)))
         {
-            int dir_x = coord_to_int(new_x) + BALL_SIZE / 2 - (player_x_coords[i] + PADDLE_WIDTH / 2);
-            int dir_y = coord_to_int(new_y) + BALL_SIZE / 2 - (state->players[i].y + PADDLE_HEIGHT / 2);
+            int dir_x = coord_to_int(new_x) + BALL_SIZE / 2
+                - (player_x_coords[i] + PADDLE_WIDTH / 2);
+            int dir_y = coord_to_int(new_y) + BALL_SIZE / 2
+                - (state->players[i].y + PADDLE_HEIGHT / 2);
             if (dir_x == 0)
                 dir_x = i == 0 ? 1 : -1;
             int divisor = gcd(dir_x, dir_y);
@@ -129,6 +131,10 @@ static void move_ball(struct GameState *state)
             state->ball.dir_x = dir_x;
             state->ball.dir_y = dir_y;
             state->ball.speed += COORD_SCALE / 2;
+            // Cap speed to prevent collision glitches
+            const int max_speed = coord_from_int(6);
+            if (state->ball.speed > max_speed)
+                state->ball.speed = max_speed;
             s_play_bounce();
             break;
         }
