@@ -1,3 +1,6 @@
+/// \file
+/// \brief Implementation of the gameplay module.
+
 #include "game.h"
 #include "coord.h"
 #include "sound.h"
@@ -11,6 +14,10 @@ static void move_ball(struct GameState *state);
 
 static void reset_ball(struct Ball *ball, int dir_x);
 
+/// Computes the GCD of two numbers.
+/// \param[in]  a   The first number.
+/// \param[in]  b   The second number.
+/// \returns    The GCD of the two numbers.
 static int gcd(int a, int b)
 {
     if (a == 0 || b == 0)
@@ -26,6 +33,9 @@ static int gcd(int a, int b)
         return gcd(a, b - a);
 }
 
+/// Increases a score, clamping if required.
+/// \param[in]  score   The original score.
+/// \returns    The new score.
 static unsigned char inc_score(unsigned char score)
 {
     unsigned new_score = score + 1;
@@ -34,6 +44,12 @@ static unsigned char inc_score(unsigned char score)
     return new_score;
 }
 
+/// Determines if the ball is colliding with the paddle.
+/// \param[in]  pad_x   The paddle's X coordinate.
+/// \param[in]  pad_y   The paddle's Y coordinate.
+/// \param[in]  ball_x  The ball's X coordinate.
+/// \param[in]  ball_y  The ball's Y coordinate.
+/// \returns    Whether the ball and paddle are colliding.
 static bool paddle_collide(int pad_x, int pad_y, int ball_x, int ball_y)
 {
     return pad_x < ball_x + BALL_SIZE
@@ -68,6 +84,8 @@ void g_update(struct GameState *state, const PlayerInput *inputs)
     move_ball(state);
 }
 
+/// Updates the ball's position and resolves collisions.
+/// \param[in]  state   The game state.
 static void move_ball(struct GameState *state)
 {
     int speed = state->ball.speed;
@@ -144,6 +162,9 @@ static void move_ball(struct GameState *state)
     state->ball.y_coord = new_y;
 }
 
+/// Returns the ball to its starting position.
+/// \param[out] ball    The ball.
+/// \param[in]  dir_x   The X direction the ball should travel.
 static void reset_ball(struct Ball *ball, int dir_x)
 {
     const int min_x = 50;

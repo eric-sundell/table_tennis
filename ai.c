@@ -1,3 +1,6 @@
+/// \file
+/// \brief Implementation of the AI module.
+
 #include "ai.h"
 #include "constants.h"
 #include "coord.h"

@@ -1,3 +1,6 @@
+/// \file
+/// \brief Program entry point.
+
 #include "ai.h"
 #include "game.h"
 #include "renderer.h"
@@ -11,8 +14,10 @@
 #include <string.h>
 #include <time.h>
 
+/// The length of one frame (in milliseconds).
 #define FRAME_TIME (1000/60)
 
+/// The help text displayed when the `--help` option is provided.
 static const char * const help_text =
 "Options:\n"
 "--player1=<difficulty>\tSets the AI difficulty for player 1\n"
@@ -23,14 +28,22 @@ static const char * const help_text =
 "\tnormal\n"
 "\thard\n";
 
+/// The controllers (if any) used by the players.
 static SDL_GameController *controllers[PLAYER_COUNT];
 
+/// Determines if a string begins with a prefix.
+/// \param[in]  str     The string to search.
+/// \param[in]  prefix  The string to search for.
+/// \returns    Whether the string begins with the prefix.
 static bool starts_with(const char *str, const char *prefix)
 {
     size_t prefix_len = strlen(prefix);
     return strncmp(str, prefix, prefix_len) == 0;
 }
 
+/// Gets the difficulty after the equals sign in the given string.
+/// \param[in]  arg The argument text.
+/// \returns    The parsed difficulty.
 static enum AIDifficulty extract_difficulty(const char *arg)
 {
     const char *equals = strchr(arg, '=');
@@ -51,6 +64,9 @@ static enum AIDifficulty extract_difficulty(const char *arg)
     
 }
 
+/// Parses the program's command line arguments.
+/// \param[in]  argc    The number of arguments.
+/// \param[in]  argv    The argument values.
 static void parse_args(int argc, char **argv)
 {
     for (int i = 1; i < argc; ++i)
@@ -76,6 +92,7 @@ static void parse_args(int argc, char **argv)
     }
 }
 
+/// Closes all open controllers.
 static void close_controllers(void)
 {
     for (size_t i = 0; i < PLAYER_COUNT; ++i)
@@ -88,6 +105,9 @@ static void close_controllers(void)
     }
 }
 
+/// Assigns the controller with the given index to a player.
+/// \param[in]  index   The controller's index.
+/// \returns True if the controller was added successfully, false otherwise.
 static bool add_controller(int index)
 {
     for (size_t i = 0; i < PLAYER_COUNT; ++i)
@@ -110,6 +130,8 @@ static bool add_controller(int index)
     return true;
 }
 
+/// Closes a controller that has been removed.
+/// \param[in]  id  The controller's joystick ID.
 static void remove_controller(SDL_JoystickID id)
 {
     SDL_GameController *removed = SDL_GameControllerFromInstanceID(id);
@@ -131,6 +153,8 @@ static void remove_controller(SDL_JoystickID id)
     }
 }
 
+/// Reads the players' inputs from the keyboard and attached controllers.
+/// \param[out] inputs  The players' inputs.
 static void read_inputs(PlayerInput *inputs)
 {
     const int paddle_speed = PADDLE_MAX_SPEED / 2;
@@ -167,6 +191,8 @@ static void read_inputs(PlayerInput *inputs)
     }
 }
 
+/// The game loop.
+/// \returns True if the loop finished without errors, false otherwise.
 static bool main_loop(void)
 {
     struct GameState game_state;
@@ -214,6 +240,10 @@ static bool main_loop(void)
     }
 }
 
+/// Program entry point.
+/// \param[in]  argc    The number of arguments.
+/// \param[in]  argv    The argument values.
+/// \returns    The exit status.
 int main(int argc, char **argv)
 {
     parse_args(argc, argv);

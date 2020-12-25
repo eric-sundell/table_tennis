@@ -1,3 +1,6 @@
+/// \file
+/// \brief Implementation of the sound module.
+
 #include "sound.h"
 #include "util.h"
 #include <SDL.h>
@@ -7,9 +10,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+/// Sample for the bounce sound effect.
 static Mix_Chunk *bounce_sample = NULL;
+
+/// Sample for the score sound effect.
 static Mix_Chunk *score_sample = NULL;
 
+/// Returns the concatenation of two strings.
+/// \param[in]  a   The first string.
+/// \param[in]  b   The second string.
+/// \returns    The concatenated string.
 static char *concat(const char *a, const char *b)
 {
     size_t a_len = strlen(a);
@@ -23,6 +33,8 @@ static char *concat(const char *a, const char *b)
     return buffer;
 }
 
+/// Plays a sound sample.
+/// \param[in]  sample  The sample to play.
 static void play_sample(Mix_Chunk *sample)
 {
     int channel = Mix_PlayChannel(-1, sample, 0);

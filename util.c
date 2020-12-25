@@ -1,3 +1,6 @@
+/// \file
+/// \brief Implementation of common utility functions.
+
 #include "util.h"
 #include <SDL.h>
 #include <stddef.h>

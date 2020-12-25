@@ -1,3 +1,6 @@
+/// \file
+/// \brief Implementation of the renderer module.
+
 #include "renderer.h"
 #include "constants.h"
 #include "coord.h"
@@ -6,13 +9,17 @@
 #include <stddef.h>
 #include <stdio.h>
 
+/// The thickness of the score numbers, in pixels.
 #define SCORE_THICKNESS 3
 
+/// Displays an SDL error and returns false if \a expr is not zero.
+/// \param  expr    The expression to check.
 #define CHECK_RESULT(expr) if (expr) {\
     u_display_sdl_error();\
     return false;\
 }
 
+/// The table rectangle.
 static const SDL_Rect table =
 {
     0, TABLE_Y,
@@ -36,8 +43,10 @@ static bool draw_7(int x);
 static bool draw_8(int x);
 static bool draw_9(int x);
 
+/// Function pointer to digit drawing function.
 typedef bool (*DrawFunc)(int x);
 
+/// The drawing functions for digits.
 static const DrawFunc draw_funcs[] =
 {
     draw_0,
@@ -52,6 +61,7 @@ static const DrawFunc draw_funcs[] =
     draw_9
 };
 
+/// The SDL renderer.
 static SDL_Renderer *renderer;
 
 bool r_init(void)
@@ -130,6 +140,9 @@ bool r_draw_frame(const struct GameState *state)
     return true;
 }
 
+/// Draws the players' paddles.
+/// \param[in]  players The players to draw.
+/// \returns    True if successful, false otherwise.
 static bool draw_paddles(const struct PlayerState *players)
 {
     SDL_Rect paddles[PLAYER_COUNT];
@@ -145,6 +158,8 @@ static bool draw_paddles(const struct PlayerState *players)
     return true;
 }
 
+/// Draws the table.
+/// \returns    True if successful, false otherwise.
 static bool draw_table(void)
 {
     CHECK_RESULT(SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255))
@@ -159,6 +174,10 @@ static bool draw_table(void)
     return true;
 }
 
+/// Draws the score at the given X coordinate.
+/// \param[in]  score   The score to draw.
+/// \param[in]  x       The X coordinate to draw at.
+/// \returns    True if successful, false otherwise.
 static bool draw_score(unsigned score, int x)
 {
     char buffer[3];
@@ -179,6 +198,9 @@ static bool draw_score(unsigned score, int x)
     return true;
 }
 
+/// Draws the digit 0.
+/// \param[in]  x   The X coordinate to draw at.
+/// \returns    True if successful, false otherwise.
 static bool draw_0(int x)
 {
     SDL_Rect rects[] =
@@ -193,6 +215,9 @@ static bool draw_0(int x)
     return true;
 }
 
+/// Draws the digit 1.
+/// \param[in]  x   The X coordinate to draw at.
+/// \returns    True if successful, false otherwise.
 static bool draw_1(int x)
 {
     SDL_Rect rects[] =
@@ -204,6 +229,9 @@ static bool draw_1(int x)
     return true;
 }
 
+/// Draws the digit 2.
+/// \param[in]  x   The X coordinate to draw at.
+/// \returns    True if successful, false otherwise.
 static bool draw_2(int x)
 {
     SDL_Rect rects[] =
@@ -219,6 +247,9 @@ static bool draw_2(int x)
     return true;
 }
 
+/// Draws the digit 3.
+/// \param[in]  x   The X coordinate to draw at.
+/// \returns    True if successful, false otherwise.
 static bool draw_3(int x)
 {
     SDL_Rect rects[] =
@@ -233,6 +264,9 @@ static bool draw_3(int x)
     return true;
 }
 
+/// Draws the digit 4.
+/// \param[in]  x   The X coordinate to draw at.
+/// \returns    True if successful, false otherwise.
 static bool draw_4(int x)
 {
     SDL_Rect rects[] =
@@ -246,6 +280,9 @@ static bool draw_4(int x)
     return true;
 }
 
+/// Draws the digit 5.
+/// \param[in]  x   The X coordinate to draw at.
+/// \returns    True if successful, false otherwise.
 static bool draw_5(int x)
 {
     SDL_Rect rects[] =
@@ -261,6 +298,9 @@ static bool draw_5(int x)
     return true;
 }
 
+/// Draws the digit 6.
+/// \param[in]  x   The X coordinate to draw at.
+/// \returns    True if successful, false otherwise.
 static bool draw_6(int x)
 {
     SDL_Rect rects[] =
@@ -276,6 +316,9 @@ static bool draw_6(int x)
     return true;
 }
 
+/// Draws the digit 7.
+/// \param[in]  x   The X coordinate to draw at.
+/// \returns    True if successful, false otherwise.
 static bool draw_7(int x)
 {
     SDL_Rect rects[] =
@@ -288,6 +331,9 @@ static bool draw_7(int x)
     return true;
 }
 
+/// Draws the digit 8.
+/// \param[in]  x   The X coordinate to draw at.
+/// \returns    True if successful, false otherwise.
 static bool draw_8(int x)
 {
     SDL_Rect rects[] =
@@ -303,6 +349,9 @@ static bool draw_8(int x)
     return true;
 }
 
+/// Draws the digit 9.
+/// \param[in]  x   The X coordinate to draw at.
+/// \returns    True if successful, false otherwise.
 static bool draw_9(int x)
 {
     SDL_Rect rects[] =
