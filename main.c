@@ -275,6 +275,7 @@ int main(int argc, char **argv)
     atexit(s_quit);
     if (!r_init(options.use_vsync))
         return EXIT_FAILURE;
+    atexit(r_quit);
 
     atexit(close_controllers);
 

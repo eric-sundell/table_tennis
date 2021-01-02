@@ -61,12 +61,14 @@ static const DrawFunc draw_funcs[] =
     draw_9
 };
 
+static SDL_Window *window;
+
 /// The SDL renderer.
 static SDL_Renderer *renderer;
 
 bool r_init(bool use_vsync)
 {
-    SDL_Window *window = SDL_CreateWindow(
+    window = SDL_CreateWindow(
         "Table Tennis",
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
@@ -97,6 +99,7 @@ bool r_init(bool use_vsync)
     if (SDL_RenderSetLogicalSize(renderer, DISPLAY_WIDTH, DISPLAY_HEIGHT))
     {
         u_display_sdl_error();
+        SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
         return false;
     }
@@ -104,6 +107,7 @@ bool r_init(bool use_vsync)
     if (SDL_RenderSetIntegerScale(renderer, SDL_TRUE))
     {
         u_display_sdl_error();
+        SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
         return false;
     }
@@ -140,6 +144,20 @@ bool r_draw_frame(const struct GameState *state)
     SDL_RenderPresent(renderer);
 
     return true;
+}
+
+void r_quit(void)
+{
+    if (renderer)
+    {
+        SDL_DestroyRenderer(renderer);
+        renderer = NULL;
+    }
+    if (window)
+    {
+        SDL_DestroyWindow(window);
+        window = NULL;
+    }
 }
 
 /// Draws the players' paddles.

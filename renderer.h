@@ -17,4 +17,7 @@ bool r_init(bool use_vsync);
 /// \returns True if drawing was successful, false otherwise.
 bool r_draw_frame(const struct GameState *state);
 
+/// Releases resources used by the renderer.
+void r_quit(void);
+
 #endif
