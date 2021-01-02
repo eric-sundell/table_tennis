@@ -64,7 +64,7 @@ static const DrawFunc draw_funcs[] =
 /// The SDL renderer.
 static SDL_Renderer *renderer;
 
-bool r_init(void)
+bool r_init(bool use_vsync)
 {
     SDL_Window *window = SDL_CreateWindow(
         "Table Tennis",
@@ -80,10 +80,12 @@ bool r_init(void)
         return false;
     }
     
+    Uint32 flags = 0;
+    flags |= use_vsync ? SDL_RENDERER_PRESENTVSYNC : 0;
     renderer = SDL_CreateRenderer(
         window,
         -1,
-        0
+        flags
     );
     if (!renderer)
     {

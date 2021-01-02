@@ -20,6 +20,7 @@
 /// The help text displayed when the `--help` option is provided.
 static const char * const help_text =
 "Options:\n"
+"--vsync\t\tEnables vertical synchronization\n"
 "--player1=<difficulty>\tSets the AI difficulty for player 1\n"
 "--player2=<difficulty>\tSets the AI difficulty for player 2\n"
 "\n<difficulty> is one of:\n"
@@ -27,6 +28,13 @@ static const char * const help_text =
 "\teasy\n"
 "\tnormal\n"
 "\thard\n";
+
+/// Contains user-supplied options.
+struct GameOptions
+{
+    /// Whether V-sync should be used.
+    bool use_vsync;
+};
 
 /// The controllers (if any) used by the players.
 static SDL_GameController *controllers[PLAYER_COUNT];
@@ -67,8 +75,9 @@ static enum AIDifficulty extract_difficulty(const char *arg)
 /// Parses the program's command line arguments.
 /// \param[in]  argc    The number of arguments.
 /// \param[in]  argv    The argument values.
-static void parse_args(int argc, char **argv)
+static struct GameOptions parse_args(int argc, char **argv)
 {
+    struct GameOptions options = { false };
     for (int i = 1; i < argc; ++i)
     {
         if (starts_with(argv[i], "--player1="))
@@ -78,6 +87,10 @@ static void parse_args(int argc, char **argv)
         else if (starts_with(argv[i], "--player2="))
         {
             ai_difficulties[1] = extract_difficulty(argv[i]);
+        }
+        else if (strcmp(argv[i], "--vsync") == 0)
+        {
+            options.use_vsync = true;
         }
         else if (strcmp(argv[i], "--help") == 0)
         {
@@ -90,6 +103,7 @@ static void parse_args(int argc, char **argv)
             exit(EXIT_FAILURE);
         }
     }
+    return options;
 }
 
 /// Closes all open controllers.
@@ -246,7 +260,7 @@ static bool main_loop(void)
 /// \returns    The exit status.
 int main(int argc, char **argv)
 {
-    parse_args(argc, argv);
+    struct GameOptions options = parse_args(argc, argv);
     srand(time(NULL));
 
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_GAMECONTROLLER) != 0)
@@ -259,7 +273,7 @@ int main(int argc, char **argv)
     if (!s_init())
         return EXIT_FAILURE;
     atexit(s_quit);
-    if (!r_init())
+    if (!r_init(options.use_vsync))
         return EXIT_FAILURE;
 
     atexit(close_controllers);

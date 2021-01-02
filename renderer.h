@@ -8,8 +8,9 @@
 #include <stdbool.h>
 
 /// Initializes the renderer.
+/// \param[in]  use_vsync   Whether V-sync should be used.
 /// \returns True if initialization was successful, false otherwise.
-bool r_init(void);
+bool r_init(bool use_vsync);
 
 /// Draws the game state to the screen.
 /// \param[in]  state   The state to render.
