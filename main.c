@@ -75,6 +75,7 @@ static enum AIDifficulty extract_difficulty(const char *arg)
 /// Parses the program's command line arguments.
 /// \param[in]  argc    The number of arguments.
 /// \param[in]  argv    The argument values.
+/// \returns Parsed options.
 static struct GameOptions parse_args(int argc, char **argv)
 {
     struct GameOptions options = { false };
